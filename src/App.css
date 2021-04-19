@@ -1,4 +1,51 @@
-.App {
-  /* background-color: aqua; */
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.table {
+  border: 1px solid black;
+  border-collapse: collapse;
+  border-spacing: 6px;
+}
+
+.table thead {
+  text-align: center;
+  padding: 20px;
+}
+
+.table th {
+  border: 1px solid black;
+}
+
+.table td {
+  padding: 0 5px;
+  text-align: left;
+  border: 1px solid black;
+}
+
+.table tr {
+  margin: 5px;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  margin-top: 5px;
+  margin-bottom: 20px;
+}
+
+.header {
+  text-align: center;
+  text-decoration: underline;
+}
+
+.error {
+  color: tomato;
+}
+
+.total {
   text-align: center;
 }

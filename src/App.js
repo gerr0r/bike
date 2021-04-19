@@ -1,30 +1,23 @@
-import { useState } from 'react';
 import './App.css';
-import { calcRent, todayDate } from './utils'
 
+import DataTable from './components/DataTable';
+import RentsForm from './components/RentsForm';
+
+import RentsDataContextProvider from './contexts/RentsDataContext';
+import PriceByDateContextProvider from './contexts/PriceByDateContext';
 
 function App() {
-  const [fromDate, setFromDate] = useState(todayDate)
-  const [toDate, setToDate] = useState(todayDate)
 
   return (
-    <div className="App">
-      <p>Bike Rent Calculator</p>
-      <div>
-        <label>From:
-        <input type='date' value={fromDate} onChange={e => setFromDate(e.target.value)} />
-        </label>
+    <PriceByDateContextProvider>
+      <div className="container">
+        <p className='header'>Bike Rent Calculator</p>
+        <RentsDataContextProvider>
+          <DataTable />
+        </RentsDataContextProvider>
+        <RentsForm />
       </div>
-      <div>
-        <label>To:
-        <input type='date' value={toDate} onChange={e => setToDate(e.target.value)} />
-        </label>
-      </div>
-      {fromDate > toDate && <p>Starting date exceeds ending date</p> }
-      <div>
-        <button onClick={() => calcRent(fromDate, toDate)} disabled={!fromDate || !toDate || fromDate > toDate}>Calculate Rent</button>
-      </div>
-    </div>
+    </PriceByDateContextProvider>
   );
 }
 

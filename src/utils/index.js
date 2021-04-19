@@ -1,49 +1,51 @@
-const data = [
-    { price_per_day: 2, from: "2020-01-01", to: "2020-01-04", added: "2019-06-01" },
-    { price_per_day: 60, from: "2020-01-03", to: "2020-01-08", added: "2019-06-02" },
-    { price_per_day: 15, from: "2020-01-05", to: "2020-01-06", added: "2019-06-01" },
-    { price_per_day: 150, from: "2020-01-08", to: "2020-01-15", added: "2019-06-15" },
-]
+import { mockData } from '../mock-db';
 
-function sortData() {
-    const priceByDate = new Map()
-    data.forEach(record => {
-        let currentDate = record.from
-        while (currentDate <= record.to) {
-            if (!priceByDate.has(currentDate) || record.added > priceByDate.get(currentDate).lastUpdate) {
-                priceByDate.set(currentDate, {price: record.price_per_day, lastUpdate: record.added})
-            }
-            let nextDate = new Date(currentDate)
-            nextDate.setDate(nextDate.getDate() + 1)
-            currentDate = new Date(nextDate).toISOString().split('T')[0]
-        }
-    })
-    return priceByDate;
-}
-
-function getDates(from, to) {
-    console.log((Date.parse(to) - Date.parse(from))/86400000);
-}
-
-export function calcRent(fromDate, toDate) {
-    let priceByDate = sortData()
-    // console.log(priceByDate);
-
-    let defaultRent = 5
-    let totalPrice = 0
-    let currentDate = fromDate
-    while (currentDate < toDate) {
-        console.log(currentDate, typeof currentDate);
-        if (priceByDate.has(currentDate)) totalPrice += priceByDate.get(currentDate).price
-        else totalPrice += defaultRent
-        // priceByDate.has(currentDate) ? totalPrice += priceByDate.get(currentDate).price : totalPrice += defaultRent
-        let nextDate = new Date(currentDate)
-        nextDate.setDate(nextDate.getDate() + 1)
-        currentDate = new Date(nextDate).toISOString().split('T')[0]
-    }
-    console.log(totalPrice)
-}
+const defaultRent = 5;
 
 export function todayDate() {
-    return new Date().toISOString().split('T')[0]
+    // return date part from ISO date-time string
+    return new Date().toISOString().split('T')[0];
 }
+
+export function initData() {
+    // initiate data from local storage or database
+    const localData = localStorage.getItem('data');
+    return localData ? JSON.parse(localData) : mockData;
+  }
+
+export function calcRent(fromDate, toDate, priceByDateMap) {
+    // calculate total rent for selected period
+    let totalPrice = 0;
+    let currentDate = fromDate;
+    while (currentDate <= toDate) {
+        totalPrice += priceByDateMap.has(currentDate) ? priceByDateMap.get(currentDate).price : defaultRent;
+        currentDate = setNextDate(currentDate);
+    }
+    return totalPrice;
+}
+
+export function createPriceByDateMap() {
+    // create Map object with daily prices for faster reference
+    const priceByDateMap = new Map();
+    const localData = initData();
+
+    localData.forEach(record => {
+        let currentDate = record.from;
+        while (currentDate <= record.to) {
+            if (!priceByDateMap.has(currentDate) || record.added > priceByDateMap.get(currentDate).lastUpdate) {
+                priceByDateMap.set(currentDate, { price: record.price_per_day, lastUpdate: record.added });
+            }
+            currentDate = setNextDate(currentDate);
+        }
+    })
+    return priceByDateMap;
+}
+
+function setNextDate(currentDate) {
+    let nextDate = new Date(currentDate);
+    // add 24 hours to current date 86400000 ms = 24h * 60m * 60s * 1000ms
+    nextDate.setTime(nextDate.getTime() + 86400000);
+    // return date part from ISO date-time string
+    return new Date(nextDate).toISOString().split('T')[0];
+}
+

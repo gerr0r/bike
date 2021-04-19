@@ -1,6 +1,7 @@
 {
   "name": "bike_rent",
   "version": "0.1.0",
+  "author": "Gergan Ruschev",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.10",
